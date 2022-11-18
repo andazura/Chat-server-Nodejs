@@ -39,7 +39,7 @@ const crearUsuario = async (req, res = response) => {
 
     res.json({
         ok:true,
-        msg: usuario,
+        usuario: usuario,
         token
     })
 }
@@ -47,13 +47,14 @@ const crearUsuario = async (req, res = response) => {
 
 const loginUsuario = async (req, res = response) => {
 
+    console.log("loe¿guenado")
     const { email, password } = req.body;
 
     try {
 
         const usuarioDb = await Usuario.findOne( { email } );
         if( !usuarioDb ){
-            return res.setHeader('status',404).json({
+            return res.status(404).json({
                 ok: false,
                 msg: "Email no encontrado"
             }) 
@@ -61,7 +62,7 @@ const loginUsuario = async (req, res = response) => {
 
         const validPassword = bcrypt.compareSync( password, usuarioDb.password );
         if( !validPassword ){
-            return res.setHeader('status',400).json({
+            return res.status(404).json({
                 ok: false,
                 msg: "Contraseña incorrecta"
             })
@@ -70,15 +71,15 @@ const loginUsuario = async (req, res = response) => {
         //generarjwt
         const token = await generarJWT( usuarioDb.id )
 
-        res.json({
+        return res.json({
             ok:true,
-            msg: usuarioDb,
+            usuario: usuarioDb,
             token
         })
 
     } catch (error) {
         console.log(error)
-        res.setHeader('status',500).json({
+        return res.status('status',500).json({
             ok: false,
             msg: "Hbale con el admin"
         }) 
